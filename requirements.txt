@@ -1,0 +1,10 @@
+sqlalchemy
+pydantic-settings>=2.0.0
+pydantic>=2.0.0
+pydantic[email]
+fastapi
+psycopg2-binary
+uvicorn
+authlib
+passlib
+python-multipart

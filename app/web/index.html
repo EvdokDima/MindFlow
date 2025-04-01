@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindFlow - Умный менеджер задач</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">
+                    <span class="logo-icon"><i class="fas fa-brain"></i></span>
+                    <span>MindFlow</span>
+                </a>
+
+                <div class="nav-links">
+                    <a href="#features">Возможности</a>
+                    <a href="#">Как это работает</a>
+                    <a href="#">Тарифы</a>
+                    <a href="#">Контакты</a>
+                </div>
+
+                <div class="auth-buttons">
+                    <button class="btn btn-outline" id="login-btn">Войти</button>
+                    <button class="btn btn-primary" id="register-btn">Регистрация</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>MindFlow - поток ваших мыслей и задач</h1>
+                <p>Интеллектуальная система управления задачами, которая адаптируется под ваш стиль работы и помогает оставаться в потоке.</p>
+                <div>
+                    <button class="btn btn-primary" style="padding: 12px 30px; font-size: 18px;" id="hero-register-btn">
+                        Начать бесплатно
+                    </button>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="MindFlow Dashboard">
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Почему MindFlow?</h2>
+                    <p>Наше приложение предлагает все необходимое для эффективного управления задачами и мыслями</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3>Умная организация</h3>
+                        <p>Автоматическая категоризация задач по контексту и приоритетам для ясности мышления.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h3>Визуальные связи</h3>
+                        <p>Создавайте ментальные карты и визуальные связи между задачами и идеями.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3>ИИ-ассистент</h3>
+                        <p>Интеллектуальные подсказки и автоматизация рутинных операций с задачами.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h3>Аналитика мышления</h3>
+                        <p>Отслеживайте паттерны своего мышления и продуктивности с помощью детальной аналитики.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <h3>Режим фокуса</h3>
+                        <p>Специальный интерфейс для глубокой концентрации без отвлекающих элементов.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h3>Поток состояний</h3>
+                        <p>Автоматическое переключение между режимами работы, отдыха и творчества.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <h2>Готовы оптимизировать поток своего сознания?</h2>
+                <p>Присоединяйтесь к сообществу MindFlow и выведите свою продуктивность на новый уровень.</p>
+                <button class="btn" style="padding: 12px 30px; font-size: 18px;" id="cta-register-btn">
+                    Начать MindFlow
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>MindFlow</h3>
+                    <p>Интеллектуальная система управления задачами и потоком сознания.</p>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Продукт</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Возможности</a></li>
+                        <li><a href="#">Тарифы</a></li>
+                        <li><a href="#">Новые функции</a></li>
+                        <li><a href="#">Документация API</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Ресурсы</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Блог</a></li>
+                        <li><a href="#">Исследования</a></li>
+                        <li><a href="#">Сообщество</a></li>
+                        <li><a href="#">Помощь</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Компания</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">О нас</a></li>
+                        <li><a href="#">Карьера</a></li>
+                        <li><a href="#">Контакты</a></li>
+                        <li><a href="#">Партнёры</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2025 MindFlow. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="tab-buttons">
+                <div class="tab-btn active" data-tab="login">Вход</div>
+                <div class="tab-btn" data-tab="register">Регистрация</div>
+            </div>
+
+            <div class="tab-content active" id="login-tab">
+                <h3 class="modal-title">Вход в MindFlow</h3>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required placeholder="Ваш email">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Пароль</label>
+                        <input type="password" id="login-password" required placeholder="Ваш пароль">
+                    </div>
+                    <button type="submit" class="form-submit">Войти</button>
+                </form>
+                <div class="form-footer">
+                    <p>Нет аккаунта? <a href="#" id="switch-to-register">Зарегистрироваться</a></p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="register-tab">
+                <h3 class="modal-title">Регистрация в MindFlow</h3>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-username">Имя пользователя</label>
+                        <input type="text" id="register-username" required placeholder="Придумайте имя пользователя">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" required placeholder="Ваш email">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Пароль</label>
+                        <input type="password" id="register-password" required placeholder="Придумайте пароль">
+                    </div>
+                    <button type="submit" class="form-submit">Зарегистрироваться</button>
+                </form>
+                <div class="form-footer">
+                    <p>Уже есть аккаунт? <a href="#" id="switch-to-login">Войти</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
