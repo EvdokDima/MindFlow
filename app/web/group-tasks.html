@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Аналогично groups.html, можно вынести в отдельный CSS файл -->
+    <style>
+        .group-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .group-name {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .group-description {
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        .group-meta {
+            display: flex;
+            gap: 15px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Аналогично groups.html -->
+    </header>
+
+    <main class="container">
+        <div id="group-info-container" class="group-info">
+            <!-- Информация о группе будет здесь -->
+        </div>
+
+        <div class="task-list" id="task-list">
+            <!-- Задачи группы будут здесь -->
+        </div>
+    </main>
+
+    <script src="js/auth.js" type="module"></script>
+    <script src="js/group-tasks.js" type="module"></script>
+</body>
+</html>
