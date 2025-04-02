@@ -7,7 +7,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/ru.js"></script>
     <style>
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin: 0;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .range-inputs, .date-range {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .range-inputs input, .date-range input {
+            flex: 1;
+        }
+
+        .date-range span, .range-inputs span {
+            color: var(--gray);
+        }
         .task-container {
             display: grid;
             grid-template-columns: 300px 1fr;
@@ -103,6 +147,36 @@
             margin-top: 15px;
         }
 
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .pagination-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #f0f0f0;
+        }
+
+        .pagination-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .task-form {
             background: white;
             padding: 25px;
@@ -139,7 +213,16 @@
             min-height: 100px;
             resize: vertical;
         }
+        .task-group {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #555;
+        }
 
+        .task-group i {
+            color: var(--primary);
+            margin-right: 5px;
+        }
         .btn {
             padding: 10px 20px;
             border-radius: 6px;
@@ -170,9 +253,9 @@
                 </a>
 
                 <div class="nav-links">
-                    <a href="/tasks.html" class="active">Мои задачи</a>
+                    <a href="/tasks.html">Мои задачи</a>
+                    <a href="/groups.html" class="active">Мои группы</a>
                     <a href="#">Аналитика</a>
-                    <a href="#">Настройки</a>
                 </div>
 
                 <div class="auth-buttons">
@@ -183,60 +266,60 @@
     </header>
 
     <main class="container">
-        <div class="task-header">
-            <h1>Мои задачи</h1>
-            <button class="btn btn-primary" id="new-task-btn">
-                <i class="fas fa-plus"></i> Новая задача
-            </button>
-        </div>
-
         <div class="task-container">
             <div class="task-filters">
                 <h3>Фильтры</h3>
+
+                <!-- Множественный выбор статусов -->
                 <div class="form-group">
-                    <label for="filter-status">Статус</label>
-                    <select id="filter-status" class="form-control">
-                        <option value="">Все</option>
-                        <option value="todo">To Do</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="done">Done</option>
-                    </select>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="status" value="todo">
+                            <span>Сделать</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="status" value="in_progress">
+                            <span>В работе</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="status" value="done">
+                            <span>Готово</span>
+                        </label>
+                    </div>
                 </div>
 
+                <!-- Диапазон приоритетов -->
                 <div class="form-group">
-                    <label for="filter-priority">Приоритет</label>
-                    <select id="filter-priority" class="form-control">
-                        <option value="">Все</option>
-                        <option value="1">1 (Низкий)</option>
-                        <option value="2">2</option>
-                        <option value="3">3 (Средний)</option>
-                        <option value="4">4</option>
-                        <option value="5">5 (Высокий)</option>
-                    </select>
+                    <label>Приоритет:</label>
+                    <div class="range-inputs">
+                        <input type="number" id="priority-min" min="1" max="5" placeholder="От" class="form-control">
+                        <span>-</span>
+                        <input type="number" id="priority-max" min="1" max="5" placeholder="До" class="form-control">
+                    </div>
                 </div>
 
+                <!-- Диапазон дат создания -->
                 <div class="form-group">
-                    <label for="filter-due-date">Срок выполнения</label>
-                    <select id="filter-due-date" class="form-control">
-                        <option value="">Все</option>
-                        <option value="today">Сегодня</option>
-                        <option value="week">На этой неделе</option>
-                        <option value="overdue">Просроченные</option>
-                    </select>
+                  <label>Диапазон дат создания:</label>
+                  <input type="text" id="created-date-range" class="form-control" placeholder="Выберите период">
                 </div>
 
-                <button class="btn btn-primary" id="apply-filters">
-                    Применить
-                </button>
-                <button class="btn btn-outline" id="reset-filters">
-                    Сбросить
-                </button>
+                <!-- Диапазон сроков выполнения -->
+                <div class="form-group">
+                  <label>Диапазон дат выполнения:</label>
+                  <input type="text" id="due-date-range" class="form-control" placeholder="Выберите период">
+                </div>
+
+                <button class="btn btn-primary" id="apply-filters">Применить</button>
+                <button class="btn btn-outline" id="reset-filters">Сбросить</button>
             </div>
 
             <div class="task-content">
                 <div class="task-list" id="task-list">
                     <!-- Задачи будут загружаться здесь -->
                 </div>
+
+                <div id="pagination" class="pagination"></div>
 
                 <div class="task-form" id="task-form" style="display: none;">
                     <h3 id="form-title">Новая задача</h3>
@@ -257,9 +340,9 @@
                             <div class="form-group">
                                 <label for="task-status">Статус</label>
                                 <select id="task-status" class="form-control">
-                                    <option value="todo">To Do</option>
-                                    <option value="in_progress">In Progress</option>
-                                    <option value="done">Done</option>
+                                    <option value="todo">Сделать</option>
+                                    <option value="in_progress">В работе</option>
+                                    <option value="done">Готово</option>
                                 </select>
                             </div>
 
@@ -276,12 +359,25 @@
                             </div>
                         </div>
 
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="task-group">Группа</label>
+                                <select id="task-group" class="form-control">
+                                    <option value="">Без группы</option>
+                                    <!-- Группы будут загружены через JS -->
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">Сохранить</button>
                             <button type="button" class="btn btn-outline" id="cancel-edit">Отмена</button>
                         </div>
                     </form>
                 </div>
+                <button class="btn btn-primary" id="new-task-btn" style="margin-top: 15px;">
+                    <i class="fas fa-plus"></i> Новая задача
+                </button>
             </div>
         </div>
     </main>

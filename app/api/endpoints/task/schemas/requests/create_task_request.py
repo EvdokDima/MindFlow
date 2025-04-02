@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
@@ -8,6 +10,7 @@ class TaskCreateRequest(BaseModel):
     title: str = Field(..., min_length=1, max_length=100)
     description: Optional[str] = Field(None, max_length=500)
     due_date: Optional[datetime] = None
+    group_id: Optional[UUID] = None
     priority: int = Field(1, ge=1, le=5)
     status: TaskStatus = TaskStatus.TODO
 

@@ -26,6 +26,7 @@ async def create_task(
         priority=task_data.priority,
         status=task_data.status.value,
         user_id=current_user.id,
+        group_id=task_data.group_id,
         created_at=datetime.utcnow()
     )
 

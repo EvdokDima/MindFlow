@@ -23,17 +23,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('reset-filters').addEventListener('click', resetFilters);
 });
 
-async function loadTasks(filters = {}) {
+async function loadTasks(params = new URLSearchParams()) {
     try {
         const token = localStorage.getItem('access_token');
-        const params = new URLSearchParams();
 
-        // Добавляем параметры фильтрации
-        if (filters.status) params.append('status', filters.status);
-        if (filters.priority_min) params.append('priority_min', filters.priority_min);
-        if (filters.priority_max) params.append('priority_max', filters.priority_max);
-        if (filters.due_date_from) params.append('due_date_from', filters.due_date_from);
-        if (filters.due_date_to) params.append('due_date_to', filters.due_date_to);
+        // Добавляем пагинацию по умолчанию, если не указана
+        if (!params.has('page')) params.append('page', '1');
+        if (!params.has('per_page')) params.append('per_page', '20');
 
         const response = await fetch(`${API_BASE_URL}/api/tasks?${params.toString()}`, {
             headers: {
@@ -45,13 +41,72 @@ async function loadTasks(filters = {}) {
             throw new Error('Ошибка загрузки задач');
         }
 
-        currentTasks = await response.json();
+        const data = await response.json();
+        currentTasks = data.items;
+        console.log(data)
         renderTasks(currentTasks);
+        renderPagination(data); // Рендерим пагинацию
 
     } catch (error) {
-        console.error('Error loading tasks:', error);
-        alert('Не удалось загрузить задачи');
+        console.error('Full error loading tasks:', error);
+
+        // Более информативное сообщение об ошибке
+        let errorMessage = 'Не удалось загрузить задачи';
+        if (error.message.includes('401')) {
+            errorMessage = 'Ошибка авторизации. Пожалуйста, войдите снова.';
+            logout();
+        } else if (error.message) {
+            errorMessage += `: ${error.message}`;
+        }
+
+        alert(errorMessage);
     }
+}
+
+function renderPagination(data) {
+    const paginationContainer = document.getElementById('pagination');
+    if (!paginationContainer) return;
+
+    paginationContainer.innerHTML = '';
+
+    if (data.total_pages <= 1) return;
+
+    // Создаем кнопку "Назад"
+    const prevButton = document.createElement('button');
+    prevButton.innerHTML = '&laquo;';
+    prevButton.className = 'pagination-btn';
+    prevButton.disabled = data.page === 1;
+    prevButton.addEventListener('click', () => {
+        const params = new URLSearchParams(window.location.search);
+        params.set('page', data.page - 1);
+        loadTasks(params);
+    });
+    paginationContainer.appendChild(prevButton);
+
+    // Создаем кнопки страниц
+    for (let i = 1; i <= data.total_pages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.className = `pagination-btn ${i === data.page ? 'active' : ''}`;
+        pageButton.addEventListener('click', () => {
+            const params = new URLSearchParams(window.location.search);
+            params.set('page', i);
+            loadTasks(params);
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+
+    // Создаем кнопку "Вперед"
+    const nextButton = document.createElement('button');
+    nextButton.innerHTML = '&raquo;';
+    nextButton.className = 'pagination-btn';
+    nextButton.disabled = data.page === data.total_pages;
+    nextButton.addEventListener('click', () => {
+        const params = new URLSearchParams(window.location.search);
+        params.set('page', data.page + 1);
+        loadTasks(params);
+    });
+    paginationContainer.appendChild(nextButton);
 }
 
 function renderTasks(tasks) {
@@ -70,6 +125,10 @@ function renderTasks(tasks) {
             <div class="task-card-header">
                 <div class="task-title">${task.title}</div>
                 <div class="task-priority">Приоритет: ${task.priority}</div>
+                ${task.group ? `
+                <div class="task-group">
+                    <i class="fas fa-folder"></i> ${task.group.name}
+                </div>` : ''}
             </div>
             ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
             <div class="task-dates">
@@ -104,16 +163,48 @@ function renderTasks(tasks) {
 
 function getStatusText(status) {
     switch(status) {
-        case 'todo': return 'To Do';
-        case 'in_progress': return 'In Progress';
-        case 'done': return 'Done';
+        case 'todo': return 'Сделать';
+        case 'in_progress': return 'В работе';
+        case 'done': return 'Готово';
         default: return status;
     }
 }
+async function loadGroupsForSelect() {
+    try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch(`${API_BASE_URL}/api/groups`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
 
-function showTaskForm(task = null) {
+        if (!response.ok) throw new Error('Ошибка загрузки групп');
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error loading groups:', error);
+        return [];
+    }
+}
+
+async function showTaskForm(task = null) {
     const form = document.getElementById('task-form');
     const formTitle = document.getElementById('form-title');
+
+    // Загружаем группы для выпадающего списка
+    const groups = await loadGroupsForSelect();
+    const groupSelect = document.getElementById('task-group');
+    groupSelect.innerHTML = '<option value="">Без группы</option>';
+
+    groups.forEach(group => {
+        const option = document.createElement('option');
+        option.value = group.id;
+        option.textContent = group.name;
+        if (task && task.group_id === group.id) {
+            option.selected = true;
+        }
+        groupSelect.appendChild(option);
+    });
 
     if (task) {
         formTitle.textContent = 'Редактировать задачу';
@@ -124,23 +215,16 @@ function showTaskForm(task = null) {
         document.getElementById('task-priority').value = task.priority;
 
         if (task.due_date) {
-            const dueDate = new Date(task.due_date);
-            // Форматируем дату для input[type=datetime-local]
-            const localDateTime = dueDate.toISOString().slice(0, 16);
-            document.getElementById('task-due-date').value = localDateTime;
-        } else {
-            document.getElementById('task-due-date').value = '';
+            document.getElementById('task-due-date').value =
+                new Date(task.due_date).toISOString().slice(0, 16);
         }
     } else {
         formTitle.textContent = 'Новая задача';
         document.getElementById('task-edit-form').reset();
         document.getElementById('task-id').value = '';
-        document.getElementById('task-status').value = 'todo';
-        document.getElementById('task-priority').value = 3;
     }
 
     form.style.display = 'block';
-    window.scrollTo({ top: form.offsetTop, behavior: 'smooth' });
 }
 
 function hideTaskForm() {
@@ -183,7 +267,6 @@ async function handleTaskSubmit(e) {
     const taskId = document.getElementById('task-id').value;
     const isEdit = !(taskId === "undefined");
 
-    // Формируем данные задачи
     const taskData = {
         title: document.getElementById('task-title').value.trim(),
         description: document.getElementById('task-description').value.trim() || null,
@@ -191,7 +274,8 @@ async function handleTaskSubmit(e) {
         priority: parseInt(document.getElementById('task-priority').value),
         due_date: document.getElementById('task-due-date').value
             ? new Date(document.getElementById('task-due-date').value).toISOString()
-            : null
+            : null,
+        group_id: document.getElementById('task-group').value || null
     };
 
     // Валидация
@@ -255,44 +339,92 @@ async function handleTaskSubmit(e) {
 }
 
 async function applyFilters() {
-    const status = document.getElementById('filter-status').value;
-    const priority = document.getElementById('filter-priority').value;
-    const dueDate = document.getElementById('filter-due-date').value;
+    try {
+        const token = localStorage.getItem('access_token');
+        const params = new URLSearchParams();
 
-    const filters = {};
+        // 1. Статусы (множественный выбор)
+        const statusCheckboxes = document.querySelectorAll('input[name="status"]:checked');
+        statusCheckboxes.forEach(checkbox => {
+            params.append('status', checkbox.value);
+        });
 
-    // Добавляем фильтры только если они есть
-    if (status) filters.status = status;
-    if (priority) {
-        filters.priority_min = priority;
-        filters.priority_max = priority;
+        // 2. Диапазон приоритетов
+        const priorityMin = document.getElementById('priority-min').value;
+        const priorityMax = document.getElementById('priority-max').value;
+        if (priorityMin) params.append('priority_min', priorityMin);
+        if (priorityMax) params.append('priority_max', priorityMax);
+
+        // 3. Диапазон дат создания
+        const createdDateRangeInput = document.getElementById('created-date-range');
+        if (createdDateRangeInput.value) {
+            const dates = createdDateRangeInput.value.split(' — ');
+            if (dates[0]) {
+                params.append('start_date_from', new Date(dates[0]).toISOString());
+            }
+            if (dates[1]) {
+                const endDate = new Date(dates[1]);
+                endDate.setHours(23, 59, 59); // Устанавливаем конец дня
+                params.append('start_date_to', endDate.toISOString());
+            }
+        }
+
+        // 4. Диапазон сроков выполнения (Flatpickr)
+        const dateRangeInput = document.getElementById('due-date-range');
+        if (dateRangeInput.value) {
+            const dates = dateRangeInput.value.split(' — ');
+            if (dates[0]) {
+                params.append('due_date_from', new Date(dates[0]).toISOString());
+            }
+            if (dates[1]) {
+                const endDate = new Date(dates[1]);
+                endDate.setHours(23, 59, 59); // Устанавливаем конец дня
+                params.append('due_date_to', endDate.toISOString());
+            }
+        }
+
+        // Добавляем пагинацию
+        params.append('page', '1');
+        params.append('per_page', '20');
+
+        // Загружаем задачи с фильтрами
+        await loadTasks(params);
+
+    } catch (error) {
+        console.error('Filter error:', error);
+        alert('Ошибка при применении фильтров');
     }
-    if (dueDate === 'today') {
-        const today = new Date().toISOString().split('T')[0];
-        filters.due_date_from = `${today}T00:00:00`;
-        filters.due_date_to = `${today}T23:59:59`;
-    } else if (dueDate === 'week') {
-        const today = new Date();
-        const endOfWeek = new Date(today);
-        endOfWeek.setDate(today.getDate() + 7);
-
-        filters.due_date_from = today.toISOString();
-        filters.due_date_to = endOfWeek.toISOString();
-    } else if (dueDate === 'overdue') {
-        filters.due_date_to = new Date().toISOString();
-        filters.status = 'todo,in_progress';
-    }
-
-    // Загружаем задачи с сервера с применением фильтров
-    await loadTasks(filters);
 }
 
-async function resetFilters() {
-    // Сбрасываем значения фильтров
-    document.getElementById('filter-status').value = '';
-    document.getElementById('filter-priority').value = '';
-    document.getElementById('filter-due-date').value = '';
+function resetFilters() {
+    // Сбрасываем приоритеты
+    document.getElementById('priority-min').value = '';
+    document.getElementById('priority-max').value = '';
 
-    // Загружаем задачи без фильтров
-    await loadTasks();
+    // Сбрасываем Flatpickr
+    const dateRangePicker = document.getElementById('due-date-range')._flatpickr;
+    if (dateRangePicker) {
+        dateRangePicker.clear();
+    }
+
+    // Загружаем задачи сброшенные фильтры
+    loadTasks(new URLSearchParams({ page: 1, per_page: 20 }));
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    flatpickr("#due-date-range", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        locale: "ru",
+        allowInput: true
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    flatpickr("#created-date-range", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        locale: "ru",
+        allowInput: true
+    });
+});
