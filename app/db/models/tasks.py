@@ -17,6 +17,10 @@ class Task(Base):
     status = Column(Enum("todo", "in_progress", "done", name="task_status"), default="todo")
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    group_id = Column(UUID(as_uuid=True), ForeignKey("task_groups.id", ondelete="CASCADE"), nullable=True)
+
+    group = relationship("TaskGroup", back_populates="tasks")
+
     user_id = Column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),

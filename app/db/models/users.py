@@ -16,3 +16,4 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     tasks = relationship("Task", back_populates="user", cascade="all, delete-orphan")
+    task_groups = relationship("TaskGroup", back_populates="user", cascade="all, delete-orphan")

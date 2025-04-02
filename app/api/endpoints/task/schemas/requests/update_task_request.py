@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
@@ -8,6 +10,7 @@ class TaskUpdateRequest(BaseModel):
     description: Optional[str] = Field(None, max_length=500)
     due_date: Optional[datetime] = None
     priority: Optional[int] = Field(None, ge=1, le=5)
+    group_id: Optional[UUID] = None
     status: Optional[str] = Field(None, pattern="^(todo|in_progress|done)$")
 
     class Config:

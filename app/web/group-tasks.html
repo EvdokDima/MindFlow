@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мои задачи - MindFlow</title>
+    <title>Мои группы - MindFlow</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/ru.js"></script>
+    <!-- Аналогично groups.html, можно вынести в отдельный CSS файл -->
     <style>
-        .checkbox-group {
+        /* Стили для карточек задач */
+        .task-list {
+            display: grid;
+            gap: 15px;
+        }
+                .checkbox-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -241,6 +244,119 @@
             background-color: var(--secondary);
             color: white;
         }
+        .task-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .task-title {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .task-priority {
+            font-size: 14px;
+            color: #666;
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .task-description {
+            color: #555;
+            margin: 12px 0;
+            line-height: 1.5;
+        }
+
+        .task-details {
+            display: flex;
+            gap: 16px;
+            margin: 12px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .task-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .task-date i {
+            color: var(--primary);
+        }
+
+        .no-tasks {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        /* Стили статусов (должны быть в вашем CSS) */
+        .status-todo {
+            background: #e0e7ff;
+            color: #6366f1;
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .status-in_progress {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .status-done {
+            background: #d1fae5;
+            color: #059669;
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            font-size: 14px;
+        }
+        .group-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .group-name {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .group-description {
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        .group-meta {
+            display: flex;
+            gap: 15px;
+            color: var(--gray);
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -266,122 +382,18 @@
     </header>
 
     <main class="container">
-        <div class="task-container">
-            <div class="task-filters">
-                <h3>Фильтры</h3>
+        <div id="group-info-container" class="group-info">
+            <!-- Информация о группе будет здесь -->
+        </div>
 
-                <!-- Множественный выбор статусов -->
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="status" value="todo">
-                            <span>Сделать</span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="status" value="in_progress">
-                            <span>В работе</span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="status" value="done">
-                            <span>Готово</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Диапазон приоритетов -->
-                <div class="form-group">
-                    <label>Приоритет:</label>
-                    <div class="range-inputs">
-                        <input type="number" id="priority-min" min="1" max="5" placeholder="От" class="form-control">
-                        <span>-</span>
-                        <input type="number" id="priority-max" min="1" max="5" placeholder="До" class="form-control">
-                    </div>
-                </div>
-
-                <!-- Диапазон дат создания -->
-                <div class="form-group">
-                  <label>Диапазон дат создания:</label>
-                  <input type="text" id="created-date-range" class="form-control" placeholder="Выберите период">
-                </div>
-
-                <!-- Диапазон сроков выполнения -->
-                <div class="form-group">
-                  <label>Диапазон дат выполнения:</label>
-                  <input type="text" id="due-date-range" class="form-control" placeholder="Выберите период">
-                </div>
-
-                <button class="btn btn-primary" id="apply-filters">Применить</button>
-                <button class="btn btn-outline" id="reset-filters">Сбросить</button>
-            </div>
-
-            <div class="task-content">
-                <div class="task-list" id="task-list">
-                    <!-- Задачи будут загружаться здесь -->
-                </div>
-
-                <div id="pagination" class="pagination"></div>
-
-                <div class="task-form" id="task-form" style="display: none;">
-                    <h3 id="form-title">Новая задача</h3>
-                    <form id="task-edit-form">
-                        <input type="hidden" id="task-id">
-
-                        <div class="form-group">
-                            <label for="task-title">Название*</label>
-                            <input type="text" id="task-title" class="form-control" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="task-description">Описание</label>
-                            <textarea id="task-description" class="form-control"></textarea>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="task-status">Статус</label>
-                                <select id="task-status" class="form-control">
-                                    <option value="todo">Сделать</option>
-                                    <option value="in_progress">В работе</option>
-                                    <option value="done">Готово</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="task-priority">Приоритет (1-5)</label>
-                                <input type="number" id="task-priority" class="form-control" min="1" max="5" value="3">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="task-due-date">Срок выполнения</label>
-                                <input type="datetime-local" id="task-due-date" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="task-group">Группа</label>
-                                <select id="task-group" class="form-control">
-                                    <option value="">Без группы</option>
-                                    <!-- Группы будут загружены через JS -->
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">Сохранить</button>
-                            <button type="button" class="btn btn-outline" id="cancel-edit">Отмена</button>
-                        </div>
-                    </form>
-                </div>
-                <button class="btn btn-primary" id="new-task-btn" style="margin-top: 15px;">
-                    <i class="fas fa-plus"></i> Новая задача
-                </button>
+        <div class="task-content">
+            <div class="task-list" id="task-list">
+                <!-- Задачи группы будут здесь -->
             </div>
         </div>
     </main>
 
-    <script src="js/tasks.js" type="module"></script>
+    <script src="js/auth.js" type="module"></script>
+    <script src="js/group-tasks.js" type="module"></script>
 </body>
 </html>

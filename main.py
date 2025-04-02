@@ -13,6 +13,9 @@ from app.api.endpoints.task import create_task_router
 from app.api.endpoints.task import read_task_router
 from app.api.endpoints.task import update_task_router
 from app.api.endpoints.task import delete_task_router
+
+from app.api.endpoints.groups import create_group_router
+from app.api.endpoints.groups import read_group_router
 app = FastAPI()
 
 origins = [
@@ -37,6 +40,8 @@ app.include_router(create_task_router.router, prefix="/api", tags=["Task"])
 app.include_router(read_task_router.router, prefix="/api", tags=["Task"])
 app.include_router(update_task_router.router, prefix="/api", tags=["Task"])
 app.include_router(delete_task_router.router, prefix="/api", tags=["Task"])
+app.include_router(create_group_router.router, prefix="/api", tags=["Group"])
+app.include_router(read_group_router.router, prefix="/api", tags=["Group"])
 
 @app.on_event("startup")
 def on_startup():
