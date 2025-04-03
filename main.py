@@ -16,6 +16,8 @@ from app.api.endpoints.task import delete_task_router
 
 from app.api.endpoints.groups import create_group_router
 from app.api.endpoints.groups import read_group_router
+
+from app.api.endpoints.stats import get_stats_router
 app = FastAPI()
 
 origins = [
@@ -36,6 +38,7 @@ app.add_middleware(
 )
 app.include_router(sign_up_router.router, prefix="/api", tags=["User"])
 app.include_router(sign_in_router.router, prefix="/api", tags=["User"])
+app.include_router(get_stats_router.router, prefix="/api", tags=["Stats"])
 app.include_router(create_task_router.router, prefix="/api", tags=["Task"])
 app.include_router(read_task_router.router, prefix="/api", tags=["Task"])
 app.include_router(update_task_router.router, prefix="/api", tags=["Task"])

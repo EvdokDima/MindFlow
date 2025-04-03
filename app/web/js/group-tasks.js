@@ -58,9 +58,6 @@ function renderGroupInfo(group) {
             <div>Создано: ${new Date(group.created_at).toLocaleDateString()}</div>
             <div>Задач: ${group.tasks_count || 0}</div>
         </div>
-        <a href="/groups.html" class="btn btn-outline">
-            <i class="fas fa-arrow-left"></i> Назад к группам
-        </a>
     `;
 }
 
