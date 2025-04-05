@@ -514,3 +514,22 @@ canvas {
     max-height: 300px;
     width: 100% !important;
 }
+
+.btn-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Расстояние между иконкой и именем */
+  font-size: 16px; /* Размер текста */
+}
+
+.username {
+  font-weight: 500; /* Жирность текста */
+  color: #333; /* Цвет текста */
+}
+
+/* Для адаптации на мобильных */
+@media (max-width: 768px) {
+  .username {
+      display: none; /* Скрываем имя на мобильных */
+  }
+}

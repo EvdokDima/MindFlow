@@ -1,7 +1,7 @@
 import { checkAuth, logout } from './auth.js';
 
 const API_BASE_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
+  ? 'https://localhost:443'
   : 'https://api-mindeasy.ru';
 let currentTasks = [];
 
@@ -10,7 +10,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = '/';
         return;
     }
+    const headerUsername = document.querySelector('.username');
 
+    async function loadProfile() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/profile`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка загрузки профиля');
+            }
+
+            const data = await response.json();
+
+            headerUsername.textContent = data.username;
+
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные профиля');
+        }
+    }
+
+    await loadProfile();
+    console.log("dsdsdsdsdsdsdsd")
     // Настройка кнопки выхода
     document.getElementById('logout-btn').addEventListener('click', logout);
 

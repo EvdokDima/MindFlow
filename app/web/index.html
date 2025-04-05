@@ -121,6 +121,123 @@
             text-decoration: none;
         }
 
+        /* Секция "Как это работает" */
+        .how-it-works {
+            padding: 80px 0;
+            background-color: #f8f9fa;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .step {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            background-color: #6366f1;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex-grow: 1;
+        }
+
+        /* Секция тарифов */
+        .pricing {
+            padding: 80px 0;
+        }
+
+        .pricing-cards {
+            display: flex;
+            gap: 30px;
+            margin-top: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .pricing-card.popular {
+            border: 2px solid #6366f1;
+            position: relative;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background-color: #6366f1;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .price {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .price-free {
+            color: #10b981;
+        }
+
+        .price-premium {
+            color: #6366f1;
+        }
+
+        .price-period {
+            font-size: 16px;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .features-list {
+            margin: 30px 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .feature-item i {
+            color: #6366f1;
+        }
+
         /* Адаптация для мобильных устройств */
         @media (max-width: 768px) {
             .modal-content {
@@ -146,6 +263,20 @@
             .form-submit {
                 padding: 10px;
                 font-size: 15px;
+            }
+
+            .steps {
+                gap: 20px;
+            }
+
+            .step {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .pricing-cards {
+                flex-direction: column;
+                align-items: center;
             }
         }
 
@@ -195,9 +326,8 @@
 
                 <div class="nav-links">
                     <a href="#features">Возможности</a>
-                    <a href="#">Как это работает</a>
-                    <a href="#">Тарифы</a>
-                    <a href="#">Контакты</a>
+                    <a href="#how-it-works">Как это работает</a>
+                    <a href="#pricing">Тарифы</a>
                 </div>
 
                 <div class="auth-buttons">
@@ -283,6 +413,117 @@
             </div>
         </section>
 
+        <section class="how-it-works" id="how-it-works">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Как работает MindFlow</h2>
+                    <p>Простое и интуитивно понятное управление задачами в несколько шагов</p>
+                </div>
+
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Создайте задачу</h3>
+                            <p>Добавьте задачу с названием, описанием, приоритетом и сроком выполнения. MindFlow автоматически предложит оптимальные параметры на основе ваших предыдущих задач.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Организуйте в группы</h3>
+                            <p>Объединяйте задачи в группы по проектам, темам или любым другим критериям. Создавайте иерархии и связи между задачами.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Отслеживайте прогресс</h3>
+                            <p>Изменяйте статус задач (Сделать, В работе, Выполнено), добавляйте комментарии и вложения. MindFlow автоматически обновит все связанные данные.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Анализируйте результаты</h3>
+                            <p>Просматривайте статистику по выполненным задачам, анализируйте свою продуктивность и получайте персональные рекомендации.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pricing" id="pricing">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Выберите подходящий тариф</h2>
+                    <p>Начните бесплатно и переходите на премиум, когда будете готовы</p>
+                </div>
+
+                <div class="pricing-cards">
+                    <div class="pricing-card">
+                        <h3>Бесплатно</h3>
+                        <div class="price price-free">0<span class="price-period">/месяц</span></div>
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Неограниченное количество задач</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>До 10 групп задач</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Базовая статистика</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Аналитика продуктивности</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" style="width: 100%;" id="free-btn-reg">Начать бесплатно</button>
+                    </div>
+
+                    <div class="pricing-card popular">
+                        <div class="popular-badge">Популярный</div>
+                        <h3>Премиум</h3>
+                        <div class="price price-premium">199<span class="price-period">/месяц</span></div>
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Все возможности бесплатной версии</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Неограниченное количество групп</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Создание проектов</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Расширенная аналитика</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>ИИ-ассистент для планирования</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Приоритетная поддержка</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%;">Купить подписку</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="cta">
             <div class="container">
                 <h2>Готовы оптимизировать поток своего сознания?</h2>
@@ -305,9 +546,9 @@
                 <div class="footer-column">
                     <h3>Продукт</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Возможности</a></li>
-                        <li><a href="#">Тарифы</a></li>
-                        <li><a href="#">Новые функции</a></li>
+                        <li><a href="#features">Возможности</a></li>
+                        <li><a href="#how-it-works">Как это работает</a></li>
+                        <li><a href="#pricing">Тарифы</a></li>
                         <li><a href="#">Документация API</a></li>
                     </ul>
                 </div>
@@ -327,7 +568,6 @@
                     <ul class="footer-links">
                         <li><a href="#">О нас</a></li>
                         <li><a href="#">Карьера</a></li>
-                        <li><a href="#">Контакты</a></li>
                         <li><a href="#">Партнёры</a></li>
                     </ul>
                 </div>
@@ -338,7 +578,6 @@
             </div>
         </div>
     </footer>
-    <!-- Остальное содержимое страницы остается без изменений -->
 
     <!-- Login Modal -->
     <div class="modal" id="login-modal">
