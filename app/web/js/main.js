@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Элементы модального окна
     const loginBtn = document.getElementById('login-btn');
+    const registerFree = document.getElementById('free-btn-reg');
     const registerBtn = document.getElementById('register-btn');
     const heroRegisterBtn = document.getElementById('hero-register-btn');
     const ctaRegisterBtn = document.getElementById('cta-register-btn');
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Открытие модального окна для регистрации
-    [registerBtn, heroRegisterBtn, ctaRegisterBtn].forEach(btn => {
+    [registerBtn, heroRegisterBtn, ctaRegisterBtn, registerFree].forEach(btn => {
         btn.addEventListener('click', function() {
             loginModal.style.display = 'flex';
             document.querySelector('[data-tab="register"]').click();

@@ -1,5 +1,5 @@
 const API_BASE_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
+  ? 'https://localhost:443'
   : 'https://api-mindeasy.ru';
 
 async function handleLogin(email, password) {

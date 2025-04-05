@@ -1,6 +1,9 @@
 .venv/
 .idea/
 
+docker-compose.dev.yml
+postgres/
+ssl/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

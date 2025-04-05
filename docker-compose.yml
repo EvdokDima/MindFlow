@@ -4,15 +4,14 @@ services:
   app:
     build: .
     ports:
-      - "8080:8080"
+      - "443:443"
     environment:
       - RANDOM_SECRET=d4e2730374f90eef6d2a7a883587d148b7d9cd12582d51d1af29625a027b35ce2a85bea66a03e8f8e8095107ee55a6ed4ba4e9cd8fedfe69c24f7976e8f1d54afe1249ffe6caf9c205b7149b36acbf1b
-      - SERVER_ADDRESS=0.0.0.0:8080
-      - SERVER_PORT=8080
+      - SERVER_ADDRESS=0.0.0.0:443
+      - SERVER_PORT=443
       - POSTGRES_CONN=postgresql://postgres:postgres@postgres:5432/mindflow
       - POSTGRES_JDBC_URL=jdbc:postgresql://postgres:5432/mindflow
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=fgsset34AQwe
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DB=mindflow
@@ -23,12 +22,10 @@ services:
     image: postgres:13
     environment:
       - POSTGRES_DB=mindflow
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    ports:
-      - "5432:5432"
+      - POSTGRES_USER=mindflow_admin
+      - POSTGRES_PASSWORD=fgsset34AQwe
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
 volumes:
   postgres_data:

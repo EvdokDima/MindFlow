@@ -1,10 +1,21 @@
 import { checkAuth, logout } from './auth.js';
 
 const API_BASE_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
+  ? 'https://localhost:443'
   : 'https://api-mindeasy.ru';
 let currentGroup = null;
 let currentTasks = [];
+
+// Ключи для localStorage
+const CACHE_KEYS = {
+    PROFILE: 'profile_cache',
+    GROUP_INFO: 'group_info_cache',
+    GROUP_TASKS: 'group_tasks_cache',
+    CACHE_TIMESTAMP: 'cache_timestamp'
+};
+
+// Время жизни кэша (5 минут)
+const CACHE_EXPIRATION = 5 * 60 * 1000;
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!checkAuth()) {
@@ -12,8 +23,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    const headerUsername = document.querySelector('.username');
+
+    // Загрузка профиля с кэшированием
+    async function loadProfile() {
+        const cachedProfile = getCachedData(CACHE_KEYS.PROFILE);
+
+        if (cachedProfile) {
+            headerUsername.textContent = cachedProfile.username;
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/profile`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка загрузки профиля');
+            }
+
+            const data = await response.json();
+            headerUsername.textContent = data.username;
+
+            // Сохраняем в кэш
+            cacheData(CACHE_KEYS.PROFILE, data);
+
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные профиля');
+        }
+    }
+
+    await loadProfile();
+
     // Настройка кнопки выхода
-    document.getElementById('logout-btn').addEventListener('click', logout);
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        // Очищаем кэш при выходе
+        clearCache();
+        logout();
+    });
 
     // Получаем ID группы из URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -28,7 +79,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadGroupTasks(groupId);
 });
 
+// Функции для работы с кэшем
+function getCachedData(key) {
+    const cachedData = localStorage.getItem(key);
+    const timestamp = localStorage.getItem(CACHE_KEYS.CACHE_TIMESTAMP);
+
+    if (!cachedData || !timestamp) return null;
+
+    const age = Date.now() - parseInt(timestamp);
+    if (age > CACHE_EXPIRATION) {
+        localStorage.removeItem(key);
+        localStorage.removeItem(CACHE_KEYS.CACHE_TIMESTAMP);
+        return null;
+    }
+
+    return JSON.parse(cachedData);
+}
+
+function cacheData(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+    localStorage.setItem(CACHE_KEYS.CACHE_TIMESTAMP, Date.now());
+}
+
+function clearCache() {
+    Object.values(CACHE_KEYS).forEach(key => {
+        localStorage.removeItem(key);
+    });
+}
+
+// Загрузка информации о группе с кэшированием
 async function loadGroupInfo(groupId) {
+    const cacheKey = `${CACHE_KEYS.GROUP_INFO}_${groupId}`;
+    const cachedGroup = getCachedData(cacheKey);
+
+    if (cachedGroup) {
+        currentGroup = cachedGroup;
+        renderGroupInfo(currentGroup);
+        return;
+    }
+
     try {
         const token = localStorage.getItem('access_token');
         const response = await fetch(`${API_BASE_URL}/api/groups/${groupId}`, {
@@ -43,6 +132,7 @@ async function loadGroupInfo(groupId) {
 
         currentGroup = await response.json();
         renderGroupInfo(currentGroup);
+        cacheData(cacheKey, currentGroup);
 
     } catch (error) {
         console.error('Error loading group info:', error);
@@ -50,6 +140,41 @@ async function loadGroupInfo(groupId) {
         window.location.href = '/groups.html';
     }
 }
+
+// Загрузка задач группы с кэшированием
+async function loadGroupTasks(groupId) {
+    const cacheKey = `${CACHE_KEYS.GROUP_TASKS}_${groupId}`;
+    const cachedTasks = getCachedData(cacheKey);
+
+    if (cachedTasks) {
+        currentTasks = cachedTasks;
+        renderTasks(currentTasks.items);
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch(`${API_BASE_URL}/api/tasks?group_id=${groupId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Ошибка загрузки задач группы');
+        }
+
+        currentTasks = await response.json();
+        renderTasks(currentTasks.items);
+        cacheData(cacheKey, currentTasks);
+
+    } catch (error) {
+        console.error('Error loading group tasks:', error);
+        alert('Не удалось загрузить задачи группы');
+    }
+}
+
+// Остальные функции (renderGroupInfo, renderTasks, getStatusText) остаются без изменений
 
 function renderGroupInfo(group) {
     const container = document.getElementById('group-info-container');
@@ -61,27 +186,6 @@ function renderGroupInfo(group) {
             <div>Задач: ${group.tasks_count || 0}</div>
         </div>
     `;
-}
-
-async function loadGroupTasks(groupId) {
-    try {
-        const token = localStorage.getItem('access_token');
-        const response = await fetch(`${API_BASE_URL}/api/tasks?group_id=${groupId}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        if (!response.ok) {
-            throw new Error('Ошибка загрузки задач группы');
-        }
-
-        currentTasks = await response.json();
-        renderTasks(currentTasks.items);
-
-    } catch (error) {
-        console.error('Error loading group tasks:', error);
-        alert('Не удалось загрузить задачи группы');
-    }
 }
 
 function renderTasks(tasks) {

@@ -1,12 +1,20 @@
 import { checkAuth, logout } from './auth.js';
 
 const API_BASE_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:8080'
+  ? 'https://localhost:443'
   : 'https://api-mindeasy.ru';
 let currentGroups = [];
 
+// Ключи для кэширования
+const CACHE_KEYS = {
+    GROUPS: 'groups_cache',
+    CACHE_TIMESTAMP: 'cache_timestamp'
+};
+
+// Время жизни кэша (5 минут)
+const CACHE_EXPIRATION = 5 * 60 * 1000;
+
 document.getElementById('new-group-btn').addEventListener('click', () => {
-    // Явно передаем null, чтобы создать новую группу
     showGroupForm(null);
 });
 
@@ -16,17 +24,83 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Настройка кнопки выхода
-    document.getElementById('logout-btn').addEventListener('click', logout);
+    const headerUsername = document.querySelector('.username');
 
-    // Загрузка групп
+    // Загрузка профиля с кэшированием
+    async function loadProfile() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/profile`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка загрузки профиля');
+            }
+
+            const data = await response.json();
+            headerUsername.textContent = data.username;
+
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные профиля');
+        }
+    }
+
+    await loadProfile();
+
+    // Настройка кнопки выхода
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        clearCache(); // Очищаем кэш при выходе
+        logout();
+    });
+
+    // Загрузка групп с кэшированием
     await loadGroups();
 
     document.getElementById('cancel-edit').addEventListener('click', hideGroupForm);
     document.getElementById('group-edit-form').addEventListener('submit', handleGroupSubmit);
 });
 
+// Функции для работы с кэшем
+function getCachedData(key) {
+    const cachedData = localStorage.getItem(key);
+    const timestamp = localStorage.getItem(CACHE_KEYS.CACHE_TIMESTAMP);
+
+    if (!cachedData || !timestamp) return null;
+
+    const age = Date.now() - parseInt(timestamp);
+    if (age > CACHE_EXPIRATION) {
+        localStorage.removeItem(key);
+        localStorage.removeItem(CACHE_KEYS.CACHE_TIMESTAMP);
+        return null;
+    }
+
+    return JSON.parse(cachedData);
+}
+
+function cacheData(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+    localStorage.setItem(CACHE_KEYS.CACHE_TIMESTAMP, Date.now());
+}
+
+function clearCache() {
+    Object.values(CACHE_KEYS).forEach(key => {
+        localStorage.removeItem(key);
+    });
+}
+
+// Загрузка групп с кэшированием
 async function loadGroups() {
+    const cachedGroups = getCachedData(CACHE_KEYS.GROUPS);
+
+    if (cachedGroups) {
+        currentGroups = cachedGroups;
+        renderGroups(currentGroups);
+        return;
+    }
+
     try {
         const token = localStorage.getItem('access_token');
         const response = await fetch(`${API_BASE_URL}/api/groups`, {
@@ -41,6 +115,7 @@ async function loadGroups() {
 
         currentGroups = await response.json();
         renderGroups(currentGroups);
+        cacheData(CACHE_KEYS.GROUPS, currentGroups);
 
     } catch (error) {
         console.error('Error loading groups:', error);
@@ -104,19 +179,16 @@ function showGroupForm(group = null) {
     const formTitle = document.getElementById('form-title');
     const groupIdInput = document.getElementById('group-id');
 
-    // Всегда сбрасываем форму перед показом
     document.getElementById('group-edit-form').reset();
 
     if (group) {
-        // Режим редактирования существующей группы
         formTitle.textContent = 'Редактировать группу';
         groupIdInput.value = group.id;
         document.getElementById('group-name').value = group.name;
         document.getElementById('group-description').value = group.description || '';
     } else {
-        // Режим создания новой группы
         formTitle.textContent = 'Новая группа';
-        groupIdInput.value = ''; // Явно сбрасываем ID
+        groupIdInput.value = '';
     }
 
     form.style.display = 'block';
@@ -151,6 +223,7 @@ async function deleteGroup(groupId) {
         });
 
         if (response.ok) {
+            clearCache(); // Очищаем кэш после удаления
             await loadGroups();
         } else {
             throw new Error('Ошибка удаления группы');
@@ -165,7 +238,7 @@ async function handleGroupSubmit(e) {
     e.preventDefault();
 
     const groupId = document.getElementById('group-id').value;
-    const isEdit = groupId === "undefined";
+    const isEdit = !!groupId;
 
     const groupData = {
         name: document.getElementById('group-name').value.trim(),
@@ -185,7 +258,7 @@ async function handleGroupSubmit(e) {
 
         if (isEdit) {
             endpoint = `${API_BASE_URL}/api/groups/${groupId}`;
-            method = 'PUT';
+            method = 'PATCH';
         } else {
             endpoint = `${API_BASE_URL}/api/groups`;
             method = 'POST';
@@ -202,10 +275,12 @@ async function handleGroupSubmit(e) {
 
         if (!response.ok) {
             const errorData = await response.json();
+            console.error('Error details:', errorData);
             throw new Error(errorData.message || 'Ошибка сохранения группы');
         }
 
         hideGroupForm();
+        clearCache(); // Очищаем кэш после изменений
         await loadGroups();
 
     } catch (error) {
