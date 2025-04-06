@@ -187,7 +187,20 @@
             background-color: #ffe4e4;
             color: #b91c1c;
         }
+    @media (max-width: 768px) {
+        .groups-list {
+            grid-template-columns: 1fr;
+        }
 
+        .group-card-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .group-form {
+            padding: 15px;
+        }
+    }
 
     </style>
 </head>
