@@ -13,6 +13,101 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <style>
+            /* Общие стили для мобильной адаптации */
+    @media (max-width: 768px) {
+        /* Уменьшаем отступы и размеры элементов */
+        .container {
+            padding: 0 15px;
+        }
+
+        /* Оптимизация навигации */
+        nav {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .nav-links {
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        .auth-buttons {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        /* Уменьшаем размеры шрифтов */
+        h1 {
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+
+        h3 {
+            font-size: 18px;
+        }
+
+        p, span, a, button {
+            font-size: 14px;
+        }
+
+        /* Оптимизация форм */
+        .form-control, input, textarea, select {
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        /* Адаптация карточек */
+        .task-card, .group-card, .profile-container, .stats-container {
+            padding: 15px;
+        }
+
+        /* Изменение структуры контейнеров */
+        .task-container {
+            grid-template-columns: 1fr;
+        }
+
+        /* Скрытие несущественных элементов на мобильных */
+        .hero-image {
+            display: none;
+        }
+    }
+
+    @media (max-width: 480px) {
+        /* Дополнительные оптимизации для очень маленьких экранов */
+        .feature-card, .pricing-card {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .steps .step {
+            flex-direction: column;
+        }
+
+        .step-number {
+            margin-bottom: 10px;
+        }
+
+        /* Оптимизация выпадающих меню */
+        .dropdown-content {
+            min-width: 140px;
+            right: -10px;
+        }
+
+        /* Уменьшение отступов */
+        section {
+            padding: 40px 0;
+        }
+    }
         /* Стили для модального окна */
         .modal {
             display: none;

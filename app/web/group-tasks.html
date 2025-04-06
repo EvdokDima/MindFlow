@@ -453,7 +453,24 @@
             color: #b91c1c;
         }
 
+    @media (max-width: 768px) {
+        .task-container {
+            grid-template-columns: 1fr;
+        }
 
+        .task-card-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .task-priority {
+            margin-top: 8px;
+        }
+
+        #task-form {
+            padding: 15px;
+        }
+    }
     </style>
 </head>
 <body>
