@@ -16,6 +16,33 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Общие стили для карточек */
+        .task-container, .task-filters, .task-card, .task-form {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Адаптивная сетка */
+        .task-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* Стили для фильтров */
+        .task-filters {
+            height: fit-content;
+        }
+
         .checkbox-group {
             display: flex;
             flex-direction: column;
@@ -30,74 +57,42 @@
             cursor: pointer;
         }
 
-        .checkbox-label input[type="checkbox"] {
-            margin: 0;
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
-
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
         .range-inputs, .date-range {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .range-inputs input, .date-range input {
-            flex: 1;
-        }
-
-        .date-range span, .range-inputs span {
-            color: var(--gray);
-        }
-        .task-container {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 30px;
-            margin-top: 30px;
-        }
-
-        .task-filters {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            height: fit-content;
-        }
-
+        /* Стили для списка задач */
         .task-list {
             display: grid;
             gap: 15px;
         }
 
         .task-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
             border-left: 4px solid var(--primary);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .task-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
+        /* Стили для элементов задачи */
         .task-card-header {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             margin-bottom: 10px;
+            gap: 10px;
         }
 
         .task-title {
             font-weight: 600;
             font-size: 18px;
+            flex: 1;
+            min-width: 200px;
         }
 
         .task-priority {
@@ -117,6 +112,7 @@
 
         .task-dates {
             display: flex;
+            flex-wrap: wrap;
             gap: 15px;
             font-size: 14px;
             color: var(--gray);
@@ -148,62 +144,26 @@
 
         .task-actions {
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
             margin-top: 15px;
         }
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin-top: 20px;
-        }
-
-        .pagination-btn {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-            background: #f0f0f0;
-        }
-
-        .pagination-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .pagination-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
+        /* Стили для формы */
         .task-form {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
+            display: none;
             margin-top: 30px;
         }
 
         .form-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 20px;
             margin-bottom: 20px;
         }
 
         .form-group {
             margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
         }
 
         .form-control {
@@ -214,20 +174,7 @@
             font-family: inherit;
         }
 
-        textarea.form-control {
-            min-height: 100px;
-            resize: vertical;
-        }
-        .task-group {
-            margin-top: 8px;
-            font-size: 14px;
-            color: #555;
-        }
-
-        .task-group i {
-            color: var(--primary);
-            margin-right: 5px;
-        }
+        /* Стили для кнопок */
         .btn {
             padding: 10px 20px;
             border-radius: 6px;
@@ -235,6 +182,9 @@
             cursor: pointer;
             transition: all 0.3s;
             border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary {
@@ -242,21 +192,80 @@
             color: white;
         }
 
+        .btn-outline {
+            background: white;
+            border: 1px solid #ddd;
+        }
+
         .btn-danger {
             background-color: var(--secondary);
             color: white;
         }
 
-        /* Стили для кнопки профиля и выпадающего меню */
-        .btn-profile {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #6366f1;
-            cursor: pointer;
-            padding: 8px;
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            .task-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .task-title {
+                min-width: 100%;
+            }
+
+            .task-actions {
+                flex-direction: column;
+            }
+
+            .task-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Стили для header (как в stats.html) */
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-weight: 500;
+            color: #444;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .auth-buttons {
             display: flex;
             align-items: center;
+            gap: 10px;
+        }
+
+        .username {
+            font-size: 14px;
+            margin-right: 6px;
+            color: #444;
+            font-weight: 500;
+        }
+
+        .logout-link {
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        .logout-link:hover {
+            background-color: #ffe4e4;
+            color: #b91c1c;
         }
 
         .profile-dropdown {
@@ -292,54 +301,15 @@
             display: block;
         }
 
-        /* Адаптация для мобильных */
         @media (max-width: 768px) {
             .dropdown-content {
                 right: -20px;
             }
-        }
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
 
-        .nav-links a {
-            font-weight: 500;
-            color: #444;
-            text-decoration: none;
-            transition: color 0.2s;
+            .nav-links {
+                gap: 10px;
+            }
         }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--primary);
-        }
-
-        .auth-buttons {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .username {
-            font-size: 14px;
-            margin-right: 6px;
-            color: #444;
-            font-weight: 500;
-        }
-
-        .logout-link {
-            color: #dc2626; /* красный */
-            font-weight: 500;
-        }
-
-        .logout-link:hover {
-            background-color: #ffe4e4;
-            color: #b91c1c;
-        }
-
-
     </style>
 </head>
 <body>
@@ -351,7 +321,7 @@
                     <span>MindFlow</span>
                 </a>
                 <div class="nav-links">
-                    <a href="/tasks.html">Мои задачи</a>
+                    <a href="/tasks.html" class="active">Мои задачи</a>
                     <a href="/groups.html">Мои группы</a>
                     <a href="/stats.html">Статистика</a>
                 </div>
@@ -379,8 +349,6 @@
         <div class="task-container">
             <div class="task-filters">
                 <h3>Фильтры</h3>
-
-                <!-- Множественный выбор статусов -->
                 <div class="form-group">
                     <div class="checkbox-group">
                         <label class="checkbox-label">
@@ -398,7 +366,6 @@
                     </div>
                 </div>
 
-                <!-- Диапазон приоритетов -->
                 <div class="form-group">
                     <label>Приоритет:</label>
                     <div class="range-inputs">
@@ -408,20 +375,20 @@
                     </div>
                 </div>
 
-                <!-- Диапазон дат создания -->
                 <div class="form-group">
-                  <label>Диапазон дат создания:</label>
-                  <input type="text" id="created-date-range" class="form-control" placeholder="Выберите период">
+                    <label>Диапазон дат создания:</label>
+                    <input type="text" id="created-date-range" class="form-control" placeholder="Выберите период">
                 </div>
 
-                <!-- Диапазон сроков выполнения -->
                 <div class="form-group">
-                  <label>Диапазон дат выполнения:</label>
-                  <input type="text" id="due-date-range" class="form-control" placeholder="Выберите период">
+                    <label>Диапазон дат выполнения:</label>
+                    <input type="text" id="due-date-range" class="form-control" placeholder="Выберите период">
                 </div>
 
-                <button class="btn btn-primary" id="apply-filters">Применить</button>
-                <button class="btn btn-outline" id="reset-filters">Сбросить</button>
+                <div class="form-actions">
+                    <button class="btn btn-primary" id="apply-filters">Применить</button>
+                    <button class="btn btn-outline" id="reset-filters">Сбросить</button>
+                </div>
             </div>
 
             <div class="task-content">
@@ -431,7 +398,7 @@
 
                 <div id="pagination" class="pagination"></div>
 
-                <div class="task-form" id="task-form" style="display: none;">
+                <div class="task-form" id="task-form">
                     <h3 id="form-title">Новая задача</h3>
                     <form id="task-edit-form">
                         <input type="hidden" id="task-id">
@@ -474,7 +441,6 @@
                                 <label for="task-group">Группа</label>
                                 <select id="task-group" class="form-control">
                                     <option value="">Без группы</option>
-                                    <!-- Группы будут загружены через JS -->
                                 </select>
                             </div>
                         </div>
@@ -485,7 +451,8 @@
                         </div>
                     </form>
                 </div>
-                <button class="btn btn-primary" id="new-task-btn" style="margin-top: 15px;">
+
+                <button class="btn btn-primary" id="new-task-btn">
                     <i class="fas fa-plus"></i> Новая задача
                 </button>
             </div>
