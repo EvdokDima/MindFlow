@@ -8,3 +8,4 @@ uvicorn
 authlib
 passlib
 python-multipart
+boto3

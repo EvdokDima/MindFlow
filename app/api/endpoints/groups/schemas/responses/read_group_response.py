@@ -10,3 +10,6 @@ class TaskGroupResponse(BaseModel):
     user_id: UUID
     tasks_count: Optional[int] = 0
     created_at: datetime
+
+    class Config:
+        from_attributes = True

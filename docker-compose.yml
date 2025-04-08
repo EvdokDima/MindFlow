@@ -15,6 +15,11 @@ services:
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DB=mindflow
+      - PATH_STYLE_S3=https://s3.regru.cloud/mindeasy/
+      - VIRTUAL_HOSTED_STYLE_S3=https://mindeasy.website.regru.cloud/
+      - S3_API_ENDPOINT=https://s3.regru.cloud
+      - ACCESS_KEY_S3=4FMZYCVX5H4NC4CAPB7K
+      - SECRET_ACCESS_KEY_S3=WpUfOCG2XT2S6pu2HCP3SIynJAzIbCnNzHfyuXFo
     depends_on:
       - postgres
 

@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     await loadProfile();
-    console.log("dsdsdsdsdsdsdsd")
     // Настройка кнопки выхода
     document.getElementById('logout-btn').addEventListener('click', logout);
 
@@ -136,6 +135,42 @@ function renderPagination(data) {
     paginationContainer.appendChild(nextButton);
 }
 
+
+
+// Добавляем после renderTasks функцию
+
+function renderFileSection(taskId, files = []) {
+    const fileSection = document.createElement('div');
+    fileSection.className = 'task-files-section';
+    fileSection.innerHTML = `
+        <div class="file-list" id="file-list-${taskId}">
+            ${files.length === 0 ? 
+              '<p>Нет прикрепленных файлов</p>' : 
+              files.map(file => `
+                <div class="file-item" data-s3_key="${file.s3_key}">
+                    <i class="fas fa-file file-icon"></i>
+                    <a href="${file.download_url}" 
+                       target="_blank" 
+                       download="${file.file_name}">
+                        ${file.file_name}
+                    </a>
+                    <div class="file-actions">
+                        <button class="btn btn-sm btn-danger delete-file">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+              `).join('')}
+        </div>
+        <button class="upload-file-btn" data-task-id="${taskId}">
+            <i class="fas fa-plus"></i> Добавить файл
+        </button>
+    `;
+
+    return fileSection;
+}
+
+// Обновляем renderTasks
 function renderTasks(tasks) {
     const taskList = document.getElementById('task-list');
     taskList.innerHTML = '';
@@ -147,7 +182,7 @@ function renderTasks(tasks) {
 
     tasks.forEach(task => {
         const taskElement = document.createElement('div');
-        taskElement.className = 'task-card';
+        taskElement.className = 'task-card'; // Используем нейтральный класс
         taskElement.innerHTML = `
             <div class="task-card-header">
                 <div class="task-title">${task.title}</div>
@@ -175,10 +210,36 @@ function renderTasks(tasks) {
             </div>
         `;
 
+        // Добавляем секцию с файлами
+        taskElement.appendChild(renderFileSection(task.id, task.files || []));
+
+        // Добавляем остальные элементы
+        taskElement.innerHTML += `
+            <div class="task-actions">
+                <!-- Ваши кнопки действий -->
+            </div>
+        `;
+
         taskList.appendChild(taskElement);
     });
 
-    // Добавляем обработчики для кнопок редактирования и удаления
+    // Обработчики для кнопок загрузки файлов
+    document.querySelectorAll('.upload-file-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const taskId = e.currentTarget.dataset.taskId;
+            showUploadModal(taskId);
+        });
+    });
+
+    // Обработчики для удаления файлов
+    document.querySelectorAll('.delete-file').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const fileItem = e.currentTarget.closest('.file-item');
+            const fileId = fileItem.dataset.s3_key;
+            deleteFile(fileId);
+        });
+    });
+        // Добавляем обработчики для кнопок редактирования и удаления
     document.querySelectorAll('.edit-task').forEach(btn => {
         btn.addEventListener('click', (e) => editTask(e.target.dataset.id));
     });
@@ -187,6 +248,78 @@ function renderTasks(tasks) {
         btn.addEventListener('click', (e) => deleteTask(e.target.dataset.id));
     });
 }
+
+// Функции для работы с модальным окном
+let currentUploadTaskId = null;
+
+function showUploadModal(taskId) {
+    currentUploadTaskId = taskId;
+    document.getElementById('file-upload-modal').style.display = 'flex';
+}
+
+function hideUploadModal() {
+    document.getElementById('file-upload-modal').style.display = 'none';
+    document.getElementById('file-to-upload').value = '';
+}
+
+// Обработчики модального окна
+document.getElementById('cancel-upload').addEventListener('click', hideUploadModal);
+document.getElementById('confirm-upload').addEventListener('click', async () => {
+    const files = document.getElementById('file-to-upload').files;
+
+    if (files.length === 0) {
+        alert('Выберите файл для загрузки');
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('access_token');
+        const formData = new FormData();
+
+        const file = files[0];
+
+        formData.append('file', file);
+        const response = await fetch(`${API_BASE_URL}/api/task/${currentUploadTaskId}/files`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        if (response.ok) {
+            await loadTasks();
+            hideUploadModal();
+        } else {
+            throw new Error('Ошибка загрузки файла');
+        }
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('Не удалось загрузить файл');
+    }
+});
+
+// Функция удаления файла (остается без изменений)
+async function deleteFile(s3Key) {
+    const confirmed = confirm("Вы уверены, что хотите удалить файл?");
+    if (!confirmed) return;
+
+    const token = localStorage.getItem('access_token');
+
+    await fetch(`${API_BASE_URL}/api/task/files`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ s3_key: s3Key })
+    });
+
+    // удалить элемент из DOM
+    document.querySelector(`[data-s3_key="${s3Key}"]`)?.remove();
+}
+
+
 
 function getStatusText(status) {
     switch(status) {
@@ -455,3 +588,4 @@ document.addEventListener('DOMContentLoaded', () => {
         allowInput: true
     });
 });
+
