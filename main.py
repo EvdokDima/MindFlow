@@ -21,6 +21,9 @@ from app.api.endpoints.groups import  delete_group_request
 from app.api.endpoints.groups import update_group_router
 
 from app.api.endpoints.stats import get_stats_router
+
+from app.api.endpoints.files import file_upload_router
+from app.api.endpoints.files import delete_file_router
 app = FastAPI()
 
 origins = [
@@ -41,6 +44,9 @@ app.add_middleware(
     allow_methods=["*"],  # Разрешаем все методы
     allow_headers=["*"],  # Разрешаем все заголовки
 )
+
+app.include_router(delete_file_router.router, prefix="/api", tags=["File"])
+app.include_router(file_upload_router.router, prefix="/api", tags=["File"])
 app.include_router(sign_up_router.router, prefix="/api", tags=["User"])
 app.include_router(sign_in_router.router, prefix="/api", tags=["User"])
 app.include_router(read_profile_router.router, prefix="/api", tags=["User"])

@@ -8,6 +8,7 @@ Base = declarative_base()
 from app.db.models.users import User
 from app.db.models.tasks import Task
 from app.db.models.groups import TaskGroup
+from app.db.models.premiums import Premium
 
 engine = create_engine(os.getenv("POSTGRES_CONN"))
 

@@ -7,7 +7,9 @@ from app.db.base import get_db
 from app.utils.get_user import get_current_user
 from app.db.models.users import User
 from app.api.endpoints.task.schemas.requests.create_task_request import TaskCreateRequest
-from app.api.endpoints.task.schemas.responses.read_task_respose import TaskResponse
+from app.api.endpoints.task.schemas.responses.read_task_respose import TaskResponse, TaskFile
+from app.utils.s3.list_task_files_from_s3 import list_task_files_with_urls_from_s3
+
 router = APIRouter()
 
 
@@ -34,4 +36,11 @@ async def create_task(
     db.commit()
     db.refresh(new_task)
 
-    return new_task
+
+
+    file_objs = list_task_files_with_urls_from_s3(str(new_task.id))
+    task_dict = new_task.__dict__
+    task_dict["files"] = [TaskFile(**f) for f in file_objs]
+
+    # Поддержка pydantic-конверсии с SQLAlchemy модели
+    return TaskResponse(**task_dict)
